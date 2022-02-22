@@ -1,0 +1,1 @@
+# CampKeen-HomeAssistant-Custom-Integration

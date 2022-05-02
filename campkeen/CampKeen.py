@@ -74,32 +74,32 @@ class CampKeenConnector():
         self.Regex = {
             'Sewage':                   {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),Sewage\,(Empty|1\/4|1\/2|3\/4|Full|ERROR Check Tank:\d{4})\r'),  'Location':self.HoldingTanks['Sewage'], 'Function':None},
             'Grey':                     {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),Grey\,(Empty|1\/4|1\/2|3\/4|Full|ERROR Check Tank:\d{4})\r'),    'Location':self.HoldingTanks['Grey'], 'Function':None},
-            'LPG':                      {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),LPG\,(Empty|1\/4|1\/2|3\/4|Full|ERROR Check Tank Sensor)\r'),    'Location':'', 'Function':None},
-            'Water Source':             {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),Water Source\,(City|Tank)\r'),                                   'Location':'', 'Function':None},
-            'Water Tank':               {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),Water Tank Level\,(Empty|1\/4|1\/2|3\/4|Full|EXTRA FULL)\r'),    'Location':'', 'Function':None},
-            'WaterState':               {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),'),'Location':'', 'Function':None},
-            'Pump Sense':               {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),'),'Location':'', 'Function':None},
-            'Warning':                  {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),'),'Location':'', 'Function':None},
-            'Alarm':                    {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),'),'Location':'', 'Function':None},
-            'EnergyMonitoring':         {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),'),'Location':'', 'Function':None},
-            'Temps':                    {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),'),'Location':'', 'Function':None},
-            '': {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),'),'Location':'', 'Function':None},
-            '': {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),'),'Location':'', 'Function':None},
-            '': {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),'),'Location':'', 'Function':None},
-            '': {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),'),'Location':'', 'Function':None},
-            '': {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),'),'Location':'', 'Function':None},
-            '': {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),'),'Location':'', 'Function':None},
-            '': {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),'),'Location':'', 'Function':None},
-            '': {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),'),'Location':'', 'Function':None},
-            '': {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),'),'Location':'', 'Function':None},
-            '': {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),'),'Location':'', 'Function':None},
-            '': {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),'),'Location':'', 'Function':None},
-            '': {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),'),'Location':'', 'Function':None},
-            '': {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),'),'Location':'', 'Function':None},
-            '': {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),'),'Location':'', 'Function':None},
-            '': {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),'),'Location':'', 'Function':None},
-            '': {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),'),'Location':'', 'Function':None},
-            '': {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),'),'Location':'', 'Function':None},
+            'LPG':                      {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),LPG\,(Empty|1\/4|1\/2|3\/4|Full|ERROR Check Tank Sensor)\r'),    'Location':self.LPGState, 'Function':None},
+            'Water Source':             {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),Water Source\,(City|Tank)\r'),                                   'Location':self.WaterSourceState, 'Function':None},
+            'Water Tank':               {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),Water Tank Level\,(Empty|1\/4|1\/2|3\/4|Full|EXTRA FULL)\r'),    'Location':self.WaterTankState , 'Function':None},
+            'WaterState':               {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),Water,(On|Off)\r'),'Location':self.WaterState, 'Function':None},
+            'Pump Sense':               {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),WaterPumpSense,(On|Off)\r'),'Location':self.WaterPumpSenseState, 'Function':None},
+            #'Warning':                  {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),'),'Location':'', 'Function':None},
+            #'Alarm':                    {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),'),'Location':'', 'Function':None},
+            #'EnergyMonitoring':         {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),'),'Location':'', 'Function':None},
+            'NTCTemps':                 {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),NTC Tempetatures,Units,(C|F),Front AC Temp,(.*),Back AC Temp,(.*),Under Awning Temp,(.*),Back Cabin Temp,(.*),Hallway Temp,(.*),Freezer,(.*),Fridge,(.*),Bathroom Temp,(.*)\r'),'Location':'', 'Function':None},
+            #'ACLEGS': {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),'),'Location':'', 'Function':None},
+            #'ACCT1GAIN': {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),'),'Location':'', 'Function':None},
+            #'ACCT2GAIN': {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),'),'Location':'', 'Function':None},
+            #'ACVOLTAGEGAIN': {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),'),'Location':'', 'Function':None},
+            #'ACFREQ': {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),'),'Location':'', 'Function':None},
+            #'ACPGAGAIN': {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),'),'Location':'', 'Function':None},
+            #'AC Energy Monitoring': {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),'),'Location':'', 'Function':None},
+            #'Water Pump Sense On Boot': {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),'),'Location':'', 'Function':None},
+            #'Streaming On Boot': {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),'),'Location':'', 'Function':None},
+            #'': {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),'),'Location':'', 'Function':None},
+            #'': {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),'),'Location':'', 'Function':None},
+            #'': {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),'),'Location':'', 'Function':None},
+            #'': {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),'),'Location':'', 'Function':None},
+            #'': {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),'),'Location':'', 'Function':None},
+            #'': {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),'),'Location':'', 'Function':None},
+            #'': {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),'),'Location':'', 'Function':None},
+            #'': {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),'),'Location':'', 'Function':None},
             #'': {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),'),'Location':'', 'Function':None},
              }
 
@@ -107,12 +107,24 @@ class CampKeenConnector():
     def IncomingDataParse(self,Buffer):
         for Key in self.Regex:
             result = re.search(self.Regex[Key]['Regex'],Buffer)
+            PostProcessFunction = self.Regex[Key]['Function']
             if result:
-                print('Found', result)
+                if PostProcessFunction == None:
+                    print('Found', result)
+                else:
+                    print('post process',result)
 
-    def SetWaterState(self,State):
+    def NTCTempParse(self,DATA):
         pass
 
-    
+    def HoldingTankParse(self,DATA):
+        pass
+
+    def LPGParse(self,DATA):
+        pass
+
+    def WaterSourceParse(self):
+        pass
+
 test = CampKeenConnector()
 test.IncomingDataParse('%R,12:35:55-8/3/2022,Sewage,Empty')

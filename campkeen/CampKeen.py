@@ -2,22 +2,27 @@ import re
 
 class CampKeenConnector():
     def __init__(self):
+        self.DateTimePattern = '(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4})'
+        self.FloatPattern = '([+-]?([0-9]*[.])?[0-9]+)'
+
         self.PressureUnit = None
         self.TempetureUnit = None
+        self.WarningState = []
+        self.AlarmState = []
+
         self.SewageTankState = []
         self.GreyTankState = []
         self.LPGState = []
+
         self.WaterTankState = []
         self.WaterSourceState = []
         self.WaterState = []
         self.WaterPumpSenseState = []
-        self.WarningState = []
-        self.AlarmState = []
 
         self.CamperBatteryVoltage = []
         self.RTCBatteryVoltage = []
 
-        self.GeneratorStates = {
+        self.Generator = {
             'Fuel Pressure':None,
             'Enclosure Temp':None,
             'Left Head Temp':None,
@@ -68,32 +73,37 @@ class CampKeenConnector():
             }
 
         self.Regex = {
-            'Sewage':                   {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),Sewage\,(Empty|1\/4|1\/2|3\/4|Full|ERROR Check Tank:\d{4})\r'),  'Function':self.SewageTankParse, 'Query':None},
-            'Grey':                     {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),Grey\,(Empty|1\/4|1\/2|3\/4|Full|ERROR Check Tank:\d{4})\r'),    'Function':None, 'Query':None},
-            'LPG':                      {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4}),LPG\,(\d{,3}|ERROR Check Tank Sensor)\r'),     'Function':None, 'Query':None},
-            'Water Source':             {'Regex':re.compile('\%R\,Water Source\,(City|Tank)\r'),                                                                                         'Function':None, 'Query':None},
-            'Water Tank':               {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4})\,Water Tank Level\,(Empty|1\/4|1\/2|3\/4|Full|EXTRA FULL)\r'),     'Function':None, 'Query':None},
-            'WaterState':               {'Regex':re.compile('\%R\,Water\,(On|Off)\r'),                                                                                                    'Function':None, 'Query':None},
-            'Pump Sense':               {'Regex':re.compile('\%R\,WaterPumpSense\,(On|Off)\r'),  
-            #'Camper Voltage':           {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4})\,Camper VDC\,()\r'),  'Function':None, 'Query':None}, 
-            #'RTC Voltage':              {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4})\,RTCBattery\,()\r'),  'Function':None, 'Query':None},   
-            'Units':                    {'Regex':re.compile('\%R\,Units\,(I|M)\r'),  'Function':None, 'Query':None},
-            'Head Unit':                {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4})\,Head Unit Temp,Units\,(C|F)\,(.*)\r'),  'Function':None, 'Query':None},'Function':None, 'Query':None},
-            'Generator':                {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4})\,Generator Fuel Pressure\,Units\,(KPa|PSI)\,(.*)\,Generator Temps\,Units\,(C|F)\,Enclosure\,(.*)\,Right Head Temp\,(.*)\,Left Head Temp\,(.*)\r'),  'Function':None, 'Query':None},
-            'NTCTemps':                 {'Regex':re.compile('\%R\,(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4})\,NTC Tempetatures,Units\,(C|F)\,Front AC Temp\,(.*)\,Back AC Temp\,(.*)\,Under Awning Temp\,(.*)\,Back Cabin Temp\,(.*)\,Hallway Temp\,(.*)\,Freezer\,(.*)\,Fridge\,(.*)\,Bathroom Temp\,(.*)\r'),  'Function':None, 'Query':None},
-            'DeviceInfo':               {'Regex':re.compile('\%R\,CampKeen\,FW\,(.*)\r'),  'Function':None, 'Query':None},
-            'AC Energy Monitoring':     {'Regex':re.compile('\%R\,AC Energy Monitoring\,(On|Off)\r'),  'Function':None, 'Query':None},
-            #'ACVOLTAGEGAIN':            {'Regex':re.compile('\%R\,'),  'Function':None, 'Query':None},
-            #'ACFREQ':                   {'Regex':re.compile('\%R\,'),  'Function':None, 'Query':None},
-            #'ACPGAGAIN':                {'Regex':re.compile('\%R\,'),  'Function':None, 'Query':None},
-            #'ACLEGS':                   {'Regex':re.compile('\%R\,'),  'Function':None, 'Query':None},
-            #'ACCT1GAIN':                {'Regex':re.compile('\%R\,'),  'Function':None, 'Query':None},
-            #'ACCT2GAIN':                {'Regex':re.compile('\%R\,'),  'Function':None, 'Query':None},
-            #'Water Duration':           {'Regex':re.compile('\%R\,'),  'Function':None, 'Query':None},
-            #'Streaming On Boot':        {'Regex':re.compile('\%R\,'),  'Function':None, 'Query':None},
-            #'Water Pump Sense On Boot': {'Regex':re.compile('\%R\,'),  'Function':None, 'Query':None},
-            #'Energy Mon On Boot':       {'Regex':re.compile('\%R\,'),  'Function':None, 'Query':None},
+            'Sewage':                   {'Regex':re.compile('\%R\,{0},Sewage\,(Empty|1\/4|1\/2|3\/4|Full|ERROR Check Tank:\d{4})\r'.format(self.DateTimePattern)),  'Function':None, 'Query':'\x25SEWAGE?\r'},
+            'Grey':                     {'Regex':re.compile('\%R\,{0},Grey\,(Empty|1\/4|1\/2|3\/4|Full|ERROR Check Tank:\d{4})\r'.format(self.DateTimePattern)),    'Function':None, 'Query':'\x25GREY?'},
+            'LPG':                      {'Regex':re.compile('\%R\,{0},LPG\,(\d{,3}|ERROR Check Tank Sensor)\r'.format(self.DateTimePattern)),                       'Function':None, 'Query':'\x25LPG?\r'},
+            
+            'Water Source':             {'Regex':re.compile('\%R\,Water Source\,(City|Tank)\r'),                                                                    'Function':None, 'Query':'\x25WATERSOURCE?\r'},
+            'Water Tank':               {'Regex':re.compile('\%R\,{0}\,Water Tank Level\,(Empty|1\/4|1\/2|3\/4|Full|EXTRA FULL)\r'.format(self.DateTimePattern)),   'Function':None, 'Query':'\x25WATERLEVEL?\r'},
+            'WaterState':               {'Regex':re.compile('\%R\,Water\,(On|Off)\r'),                                                                              'Function':None, 'Query':'\x25WATER?\r'},
+            'Pump Sense':               {'Regex':re.compile('\%R\,WaterPumpSense\,(On|Off)\r'),                                                                     'Function':None, 'Query':'\x25WATERPUMPSENSE?\r'}, 
+            'Water Pump Sense On Boot': {'Regex':re.compile('\%R\,WaterPumpSense on boot\,(On|Off)\r'),                                                           'Function':None, 'Query':'\x25WATERPUMPSENSEONBOOT?\r'},
+            'Water Duration':           {'Regex':re.compile('\%R\,WATERDURATION\,Units\,Seconds\,(\d{3,})\r'),                                                      'Function':None, 'Query':'\x25WATERDURATION?\r'},
+            
+            'Camper Voltage':           {'Regex':re.compile('\%R\,{0}\,Camper VDC\,{0}\r'.format(self.FloatPattern)),                                               'Function':None, 'Query':'\x25BATTERY?\r'}, 
+            'RTC Voltage':              {'Regex':re.compile('\%R\,{0}\,RTCBattery\,{0}\r'.format(self.FloatPattern)),                                               'Function':None, 'Query':'\x25RTCBATTERY?\r'},   
+            'Head Unit':                {'Regex':re.compile('\%R\,{0}\,Head Unit Temp,Units\,(C|F)\,{1}\r'.format(self.DateTimePattern,self.FloatPattern)),         'Function':None, 'Query':'\x25UNITTEMP?\r'},
+            'NTCTemps':                 {'Regex':re.compile('\%R\,{0}\,NTC Tempetatures,Units\,(C|F)\,Front AC Temp\,{1}\,Back AC Temp\,{1}\,Under Awning Temp\,{1}\,Back Cabin Temp\,{1}\,Hallway Temp\,{1}\,Freezer\,{1}\,Fridge\,{1}\,Bathroom Temp\,{1}\r'.format(self.DateTimePattern)),  'Function':None, 'Query':'\x25TEMPS?\r'},
+
+            'Generator':                {'Regex':re.compile('\%R\,{0}\,Generator Fuel Pressure\,Units\,(KPa|PSI)\,{1}\,Generator Temps\,Units\,(C|F)\,Enclosure\,{1}\,Right Head Temp\,{1}\,Left Head Temp\,{1}\r'.format(self.DateTimePattern,self.FloatPattern)),  'Function':None, 'Query':'\x25GENERATOR?\r'},
+
+            'AC Energy Monitoring':     {'Regex':re.compile('\%R\,AC Energy Monitoring\,(On|Off)\r'),                                                               'Function':None, 'Query':None},
+            'Energy Mon On Boot':       {'Regex':re.compile('\%R\,AC Energy Monitoring on Boot\,(On|Off)\r'),                                                       'Function':None, 'Query':None},
             #'Energy':                   {'Regex':re.compile('\%R\,'),  'Function':None, 'Query':None},
+            'ACVOLTAGEGAIN':            {'Regex':re.compile('\%R\,ACVOLTAGEGAIN\,(\d{,5})\r'),                                                                      'Function':None, 'Query':'\x25ACVOLTAGEGAIN?\r'},
+            'ACFREQ':                   {'Regex':re.compile('\%R\,ACFREQ\,(60|50)\r'),                                                                              'Function':None, 'Query':'\x25ACFREQ?\r'},
+            'ACPGAGAIN':                {'Regex':re.compile('\%R\,ACPGAGAIN\,(\d{,5})\r'),                                                                          'Function':None, 'Query':'\x25ACPGAGAIN?\r'},
+            'ACLEGS':                   {'Regex':re.compile('\%R\,ACLEGS\,(1|2)\r'),                                                                                'Function':None, 'Query':'\x25ACLEGS?\r'},
+            'ACCT1GAIN':                {'Regex':re.compile('\%R\,ACCT1GAIN\,(\d{,5})\r'),                                                                          'Function':None, 'Query':'\x25ACCT1GAIN?\r'},
+            'ACCT2GAIN':                {'Regex':re.compile('\%R\,ACCT2GAIN\,(\d{,5})\r'),                                                                          'Function':None, 'Query':'\x25ACCT2GAIN?\r'},
+
+            'Streaming On Boot':        {'Regex':re.compile('\%R\,Streaming Data on boot\,USB\,(On|Off)\,RS232\,(On|Off)\r'),                                       'Function':None, 'Query':'\x25STREAMINGONBOOT?\r'},
+            'Units':                    {'Regex':re.compile('\%R\,Units\,(I|M)\r'),                                                                                 'Function':None, 'Query':'\x25UNITS?\r'},
+            'DeviceInfo':               {'Regex':re.compile('\%R\,CampKeen\,FW\,(.*)\r'),                                                                           'Function':None, 'Query':'\x25DEVICE?\r'},
             #'Warning':                  {'Regex':re.compile('\%R\,'),  'Function':None, 'Query':None},
             #'Alarm':                    {'Regex':re.compile('\%R\,'),  'Function':None, 'Query':None},
              }
@@ -108,3 +118,8 @@ class CampKeenConnector():
                     print('Found', result)
                 else:
                     print('post process',result)
+
+
+TestString = '%R,Water Source,Tank\r'
+test = CampKeenConnector()
+test.IncomingDataParse(TestString)

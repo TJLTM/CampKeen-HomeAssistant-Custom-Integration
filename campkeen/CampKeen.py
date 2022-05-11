@@ -73,9 +73,9 @@ class CampKeenConnector():
             }
 
         self.Regex = {
-            'Sewage':                   {'Regex':re.compile('\%R\,{0},Sewage\,(Empty|1\/4|1\/2|3\/4|Full|ERROR Check Tank:\d{4})\r'.format(self.DateTimePattern)),  'Function':None, 'Query':'\x25SEWAGE?\r'},
-            'Grey':                     {'Regex':re.compile('\%R\,{0},Grey\,(Empty|1\/4|1\/2|3\/4|Full|ERROR Check Tank:\d{4})\r'.format(self.DateTimePattern)),    'Function':None, 'Query':'\x25GREY?'},
-            'LPG':                      {'Regex':re.compile('\%R\,{0},LPG\,(\d{,3}|ERROR Check Tank Sensor)\r'.format(self.DateTimePattern)),                       'Function':None, 'Query':'\x25LPG?\r'},
+            'Sewage':                   {'Regex':re.compile('\%R\,'+ self.DateTimePattern +',Sewage\,(Empty|1\/4|1\/2|3\/4|Full|ERROR Check Tank:\d{4})\r'),  'Function':None, 'Query':'\x25SEWAGE?\r'},
+            'Grey':                     {'Regex':re.compile('\%R\,'+ self.DateTimePattern +',Grey\,(Empty|1\/4|1\/2|3\/4|Full|ERROR Check Tank:\d{4})\r'),    'Function':None, 'Query':'\x25GREY?'},
+            'LPG':                      {'Regex':re.compile('\%R\,'+ self.DateTimePattern +',LPG\,(\d{,3}|ERROR Check Tank Sensor)\r'),                       'Function':None, 'Query':'\x25LPG?\r'},
             
             'Water Source':             {'Regex':re.compile('\%R\,Water Source\,(City|Tank)\r'),                                                                    'Function':None, 'Query':'\x25WATERSOURCE?\r'},
             'Water Tank':               {'Regex':re.compile('\%R\,{0}\,Water Tank Level\,(Empty|1\/4|1\/2|3\/4|Full|EXTRA FULL)\r'.format(self.DateTimePattern)),   'Function':None, 'Query':'\x25WATERLEVEL?\r'},
@@ -87,7 +87,7 @@ class CampKeenConnector():
             'Camper Voltage':           {'Regex':re.compile('\%R\,{0}\,Camper VDC\,{0}\r'.format(self.FloatPattern)),                                               'Function':None, 'Query':'\x25BATTERY?\r'}, 
             'RTC Voltage':              {'Regex':re.compile('\%R\,{0}\,RTCBattery\,{0}\r'.format(self.FloatPattern)),                                               'Function':None, 'Query':'\x25RTCBATTERY?\r'},   
             'Head Unit':                {'Regex':re.compile('\%R\,{0}\,Head Unit Temp,Units\,(C|F)\,{1}\r'.format(self.DateTimePattern,self.FloatPattern)),         'Function':None, 'Query':'\x25UNITTEMP?\r'},
-            'NTCTemps':                 {'Regex':re.compile('\%R\,{0}\,NTC Tempetatures,Units\,(C|F)\,Front AC Temp\,{1}\,Back AC Temp\,{1}\,Under Awning Temp\,{1}\,Back Cabin Temp\,{1}\,Hallway Temp\,{1}\,Freezer\,{1}\,Fridge\,{1}\,Bathroom Temp\,{1}\r'.format(self.DateTimePattern)),  'Function':None, 'Query':'\x25TEMPS?\r'},
+            'NTCTemps':                 {'Regex':re.compile('\%R\,{0}\,NTC Tempetatures,Units\,(C|F)\,Front AC Temp\,{1}\,Back AC Temp\,{1}\,Under Awning Temp\,{1}\,Back Cabin Temp\,{1}\,Hallway Temp\,{1}\,Freezer\,{1}\,Fridge\,{1}\,Bathroom Temp\,{1}\r'.format(self.DateTimePattern,self.FloatPattern)),  'Function':None, 'Query':'\x25TEMPS?\r'},
 
             'Generator':                {'Regex':re.compile('\%R\,{0}\,Generator Fuel Pressure\,Units\,(KPa|PSI)\,{1}\,Generator Temps\,Units\,(C|F)\,Enclosure\,{1}\,Right Head Temp\,{1}\,Left Head Temp\,{1}\r'.format(self.DateTimePattern,self.FloatPattern)),  'Function':None, 'Query':'\x25GENERATOR?\r'},
 
@@ -104,10 +104,13 @@ class CampKeenConnector():
             'Streaming On Boot':        {'Regex':re.compile('\%R\,Streaming Data on boot\,USB\,(On|Off)\,RS232\,(On|Off)\r'),                                       'Function':None, 'Query':'\x25STREAMINGONBOOT?\r'},
             'Units':                    {'Regex':re.compile('\%R\,Units\,(I|M)\r'),                                                                                 'Function':None, 'Query':'\x25UNITS?\r'},
             'DeviceInfo':               {'Regex':re.compile('\%R\,CampKeen\,FW\,(.*)\r'),                                                                           'Function':None, 'Query':'\x25DEVICE?\r'},
-            #'Warning':                  {'Regex':re.compile('\%R\,'),  'Function':None, 'Query':None},
-            #'Alarm':                    {'Regex':re.compile('\%R\,'),  'Function':None, 'Query':None},
+            'Warning':                  {'Regex':re.compile('\%R\,{0}\,Warning\,(.*)\r'.format(self.DateTimePattern)),                                              'Function':None, 'Query':'\x25WARNING?\r'},
              }
 
+
+    def SendCommands(self,WhichCommand):
+        if WhichCommand == '':
+            pass
 
     def IncomingDataParse(self,Buffer):
         for Key in self.Regex:

@@ -73,15 +73,15 @@ class CampKeenConnector():
             }
 
         self.Regex = {
-            'Sewage':                   {'Regex':re.compile('\%R\,'+ self.DateTimePattern +',Sewage\,(Empty|1\/4|1\/2|3\/4|Full|ERROR Check Tank:\d{4})\r'),  'Function':None, 'Query':'\x25SEWAGE?\r'},
-            'Grey':                     {'Regex':re.compile('\%R\,'+ self.DateTimePattern +',Grey\,(Empty|1\/4|1\/2|3\/4|Full|ERROR Check Tank:\d{4})\r'),    'Function':None, 'Query':'\x25GREY?'},
-            'LPG':                      {'Regex':re.compile('\%R\,'+ self.DateTimePattern +',LPG\,(\d{,3}|ERROR Check Tank Sensor)\r'),                       'Function':None, 'Query':'\x25LPG?\r'},
+            'Sewage':                   {'Regex':re.compile('\%R\,'+ self.DateTimePattern +',Sewage\,(Empty|1\/4|1\/2|3\/4|Full|ERROR Check Tank:\d{4})\r'),        'Function':None, 'Query':'\x25SEWAGE?\r'},
+            'Grey':                     {'Regex':re.compile('\%R\,'+ self.DateTimePattern +',Grey\,(Empty|1\/4|1\/2|3\/4|Full|ERROR Check Tank:\d{4})\r'),          'Function':None, 'Query':'\x25GREY?'},
+            'LPG':                      {'Regex':re.compile('\%R\,'+ self.DateTimePattern +',LPG\,(\d{,3}|ERROR Check Tank Sensor)\r'),                             'Function':None, 'Query':'\x25LPG?\r'},
             
             'Water Source':             {'Regex':re.compile('\%R\,Water Source\,(City|Tank)\r'),                                                                    'Function':None, 'Query':'\x25WATERSOURCE?\r'},
             'Water Tank':               {'Regex':re.compile('\%R\,{0}\,Water Tank Level\,(Empty|1\/4|1\/2|3\/4|Full|EXTRA FULL)\r'.format(self.DateTimePattern)),   'Function':None, 'Query':'\x25WATERLEVEL?\r'},
             'WaterState':               {'Regex':re.compile('\%R\,Water\,(On|Off)\r'),                                                                              'Function':None, 'Query':'\x25WATER?\r'},
             'Pump Sense':               {'Regex':re.compile('\%R\,WaterPumpSense\,(On|Off)\r'),                                                                     'Function':None, 'Query':'\x25WATERPUMPSENSE?\r'}, 
-            'Water Pump Sense On Boot': {'Regex':re.compile('\%R\,WaterPumpSense on boot\,(On|Off)\r'),                                                           'Function':None, 'Query':'\x25WATERPUMPSENSEONBOOT?\r'},
+            'Water Pump Sense On Boot': {'Regex':re.compile('\%R\,WaterPumpSense on boot\,(On|Off)\r'),                                                             'Function':None, 'Query':'\x25WATERPUMPSENSEONBOOT?\r'},
             'Water Duration':           {'Regex':re.compile('\%R\,WATERDURATION\,Units\,Seconds\,(\d{3,})\r'),                                                      'Function':None, 'Query':'\x25WATERDURATION?\r'},
             
             'Camper Voltage':           {'Regex':re.compile('\%R\,{0}\,Camper VDC\,{0}\r'.format(self.FloatPattern)),                                               'Function':None, 'Query':'\x25BATTERY?\r'}, 

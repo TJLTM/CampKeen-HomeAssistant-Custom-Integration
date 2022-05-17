@@ -3,6 +3,7 @@ import re
 class CampKeenConnector():
     def __init__(self):
         self.DateTimePattern = '(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4})'
+        #time pattern format == 
         self.FloatPattern = '([+-]?([0-9]*[.])?[0-9]+)'
 
         self.PressureUnit = None
@@ -91,7 +92,7 @@ class CampKeenConnector():
 
             'AC Energy Monitoring':     {'Regex':re.compile('\%R\,AC Energy Monitoring\,(On|Off)\r'),                                                               'Function':None, 'DataLocation':None,  'Query':None},
             'Energy Mon On Boot':       {'Regex':re.compile('\%R\,AC Energy Monitoring on Boot\,(On|Off)\r'),                                                       'Function':None, 'DataLocation':None,  'Query':None},
-            #'Energy':                   {'Regex':re.compile('\%R\,'),  'Function':None, 'DataLocation':None,  'Query':None},
+            'Energy':                   {'Regex':re.compile('\%R\,{0}\,Energy Monitor\,({1})\,V\,({1})\,A\,({1})\,PF\,({1})\,W\(real\)\,({1})\,Hz\,({1})\,W\(total\)\,({1})\,var\(reactive\)\,({1})\,VA\(apparent\)\,({1})\,W\(fundimental\)\,({1})\,W\(harmonic\)\r'.format(self.DateTimePattern,self.FloatPattern)),  'Function':None, 'DataLocation':None,  'Query':None},
             'ACVOLTAGEGAIN':            {'Regex':re.compile('\%R\,ACVOLTAGEGAIN\,(\d{,5})\r'),                                                                      'Function':None, 'DataLocation':None,  'Query':'\x25ACVOLTAGEGAIN?\r'},
             'ACFREQ':                   {'Regex':re.compile('\%R\,ACFREQ\,(60|50)\r'),                                                                              'Function':None, 'DataLocation':None,  'Query':'\x25ACFREQ?\r'},
             'ACPGAGAIN':                {'Regex':re.compile('\%R\,ACPGAGAIN\,(\d{,5})\r'),                                                                          'Function':None, 'DataLocation':None,  'Query':'\x25ACPGAGAIN?\r'},
@@ -103,6 +104,7 @@ class CampKeenConnector():
             'Units':                    {'Regex':re.compile('\%R\,Units\,(I|M)\r'),                                                                                 'Function':None, 'DataLocation':None,  'Query':'\x25UNITS?\r'},
             'DeviceInfo':               {'Regex':re.compile('\%R\,CampKeen\,FW\,(.*)\r'),                                                                           'Function':None, 'DataLocation':None,  'Query':'\x25DEVICE?\r'},
             'Warning':                  {'Regex':re.compile('\%R\,{0}\,Warning\,(.*)\r'.format(self.DateTimePattern)),                                              'Function':None, 'DataLocation':None,  'Query':'\x25WARNING?\r'},
+            'Port':                     {'Regex':re.compile('\%R\,Current Port\,(RS232|USB)\r'),                                                                    'Function':None, 'DataLocation':None,  'Query':'\x25PORT?\r'},
              }
 
 
@@ -119,6 +121,15 @@ class CampKeenConnector():
                     print('Found', result)
                 else:
                     print('post process',result)
+
+    def GeneratorParse(self,MatchObj):
+        pass
+
+    def EnergyParse(self, MatchObj):
+        pass
+
+    def NTCParse(self,MatchObj):
+        pass
 
 
 TestString = '%R,Water Source,Tank\r'

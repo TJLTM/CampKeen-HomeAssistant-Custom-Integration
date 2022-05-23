@@ -149,6 +149,7 @@ class CampKeenDataParsing():
             result = re.search(self.Regex[Key]['Regex'],Buffer)
             PostProcessFunction = self.Regex[Key]['Function']
             if result:
+                print(Key)
                 if PostProcessFunction == None:
                     self.Regex[Key]['DataLocation'].append(None)
                     self.Regex[Key]['DataLocation'].append(result.group(1))
@@ -182,6 +183,7 @@ class CampKeenDataParsing():
 
 
 Something = "afsdkl;fu%R,Water,On\r"
+Something ="%R,CampKeen,FW,1.0.9\r"
 test = CampKeenDataParsing()
 print(test.WaterState)
 print(test.IncomingDataParse(Something))

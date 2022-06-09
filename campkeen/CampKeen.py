@@ -1,4 +1,4 @@
-import re
+import time
 
 class CampKeenConnector():
     def __init__(self):
@@ -17,10 +17,6 @@ class CampKeenConnector():
 
 class CampKeenDataParsing():
     def __init__(self):
-        self.DateTimePattern = '(\d{1,2}\:\d{1,2}\:\d{1,2}\-\d{1,2}\/\d{1,2}\/\d{4})'
-        #time pattern format == 
-        self.FloatPattern = '([+-]?([0-9]*[.])?[0-9]+)'
-
         self.PressureUnit = None
         self.TempetureUnit = None
         self.WarningState = []
@@ -50,7 +46,7 @@ class CampKeenDataParsing():
         self.Temps = {
             'Front AC':[],
             'Back AC':[],
-            'Outside':[],
+            'Under Awning Temp':[],
             'Back Cabin':[],
             'Hallway':[],
             'Freezer':[],
@@ -90,39 +86,39 @@ class CampKeenDataParsing():
         self.Units = []
 
         self.Regex = {
-            'Sewage':                   {'Regex':re.compile('\%R\,'+ self.DateTimePattern +',Sewage\,(Empty|1\/4|1\/2|3\/4|Full|ERROR Check Tank:\d{4})\r'),        'Function':None,                'DataLocation':self.SewageTankState,           'Query':'\x25SEWAGE?\r'},
-            'Grey':                     {'Regex':re.compile('\%R\,'+ self.DateTimePattern +',Grey\,(Empty|1\/4|1\/2|3\/4|Full|ERROR Check Tank:\d{4})\r'),          'Function':None,                'DataLocation':self.GreyTankState,             'Query':'\x25GREY?'},
-            'LPG':                      {'Regex':re.compile('\%R\,'+ self.DateTimePattern +',LPG\,(\d{,3}|ERROR Check Tank Sensor)\r'),                             'Function':None,                'DataLocation':self.LPGState,                  'Query':'\x25LPG?\r'},
+            'Sewage':                   {'Function':None,                   'DataLocation':self.SewageTankState,           'Query':'\x25SEWAGE?\r'}, #done
+            'Grey':                     {'Function':None,                   'DataLocation':self.GreyTankState,             'Query':'\x25GREY?'}, #done
+            'LPG':                      {'Function':None,                   'DataLocation':self.LPGState,                  'Query':'\x25LPG?\r'}, #done
             
-            'Water Source':             {'Regex':re.compile('\%R\,Water Source\,(City|Tank)\r'),                                                                    'Function':None,                'DataLocation':self.WaterSourceState,          'Query':'\x25WATERSOURCE?\r'},
-            'Water Tank':               {'Regex':re.compile('\%R\,{0}\,Water Tank Level\,(Empty|1\/4|1\/2|3\/4|Full|EXTRA FULL)\r'.format(self.DateTimePattern)),   'Function':None,                'DataLocation':self.WaterTankState,            'Query':'\x25WATERLEVEL?\r'},
-            'WaterState':               {'Regex':re.compile('\%R\,Water\,(On|Off)\r'),                                                                              'Function':None,                'DataLocation':self.WaterState,                'Query':'\x25WATER?\r'},
-            'Pump Sense':               {'Regex':re.compile('\%R\,WaterPumpSense\,(On|Off)\r'),                                                                     'Function':None,                'DataLocation':self.WaterPumpSenseState,       'Query':'\x25WATERPUMPSENSE?\r'}, 
-            'Water Pump Sense On Boot': {'Regex':re.compile('\%R\,WaterPumpSense on boot\,(On|Off)\r'),                                                             'Function':None,                'DataLocation':self.WaterPumpSenseOnBoot,      'Query':'\x25WATERPUMPSENSEONBOOT?\r'},
-            'Water Duration':           {'Regex':re.compile('\%R\,WATERDURATION\,Units\,Seconds\,(\d{3,})\r'),                                                      'Function':None,                'DataLocation':self.WaterDuration,             'Query':'\x25WATERDURATION?\r'},
+            'Water Source':             {'Function':None,                   'DataLocation':self.WaterSourceState,          'Query':'\x25WATERSOURCE?\r'}, #done
+            'Water Tank Level':         {'Function':None,                   'DataLocation':self.WaterTankState,            'Query':'\x25WATERLEVEL?\r'}, #done
+            'Water':                    {'Function':None,                   'DataLocation':self.WaterState,                'Query':'\x25WATER?\r'}, #done
+            'Water Pump Sense':         {'Function':None,                   'DataLocation':self.WaterPumpSenseState,       'Query':'\x25WATERPUMPSENSE?\r'},  #done
+            'Water Pump Sense on boot': {'Function':None,                   'DataLocation':self.WaterPumpSenseOnBoot,      'Query':'\x25WATERPUMPSENSEONBOOT?\r'}, #done
+            'WATERDURATION':            {'Function':self.WaterDurationParse,'DataLocation':self.WaterDuration,             'Query':'\x25WATERDURATION?\r'},
             
-            'Camper Voltage':           {'Regex':re.compile('\%R\,{0}\,Camper VDC\,{0}\r'.format(self.FloatPattern)),                                               'Function':None,                'DataLocation':self.CamperBatteryVoltage,      'Query':'\x25BATTERY?\r'}, 
-            'RTC Voltage':              {'Regex':re.compile('\%R\,{0}\,RTCBattery\,{0}\r'.format(self.FloatPattern)),                                               'Function':None,                'DataLocation':self.RTCBatteryVoltage,         'Query':'\x25RTCBATTERY?\r'},   
-            'Head Unit':                {'Regex':re.compile('\%R\,{0}\,(Head Unit Temp),Units\,(C|F)\,{1}\r'.format(self.DateTimePattern,self.FloatPattern)),       'Function':self.TempParse,      'DataLocation':None,                           'Query':'\x25UNITTEMP?\r'},
-            'NTCTemps':                 {'Regex':re.compile('\%R\,{0}\,(NTC Tempetatures),Units\,(C|F)\,Front AC Temp\,({1})\,Back AC Temp\,({1})\,Under Awning Temp\,({1})\,Back Cabin Temp\,({1})\,Hallway Temp\,({1})\,Freezer\,({1})\,Fridge\,({1})\,Bathroom Temp\,({1})\r'.format(self.DateTimePattern,self.FloatPattern)),  'Function':self.TempParse, 'DataLocation':None,  'Query':'\x25TEMPS?\r'},
+            'Camper VDC':               {'Function':None,                   'DataLocation':self.CamperBatteryVoltage,      'Query':'\x25BATTERY?\r'}, #done
+            'RTCBattery':               {'Function':None,                   'DataLocation':self.RTCBatteryVoltage,         'Query':'\x25RTCBATTERY?\r'}, #done
+            'Head Unit Temp':           {'Function':self.TempParse,         'DataLocation':None,                           'Query':'\x25UNITTEMP?\r'}, #done
+            'NTC Tempetatures':         {'Function':self.TempParse,         'DataLocation':None,                           'Query':'\x25TEMPS?\r'}, #done
 
-            'Generator':                {'Regex':re.compile('\%R\,{0}\,Generator Fuel Pressure\,Units\,(KPa|PSI)\,{1}\,Generator Temps\,Units\,(C|F)\,Enclosure\,{1}\,Right Head Temp\,{1}\,Left Head Temp\,{1}\r'.format(self.DateTimePattern,self.FloatPattern)),  'Function':self.GeneratorParse, 'DataLocation':None,  'Query':'\x25GENERATOR?\r'},
+            'Generator Fuel Pressure':  {'Function':self.GeneratorParse,    'DataLocation':None,                           'Query':'\x25GENERATOR?\r'}, #done
 
-            'AC Energy Monitoring':     {'Regex':re.compile('\%R\,AC Energy Monitoring\,(On|Off)\r'),                                                               'Function':None,                'DataLocation':self.ACEnergyMonitoring,         'Query':None},
-            'Energy Mon On Boot':       {'Regex':re.compile('\%R\,AC Energy Monitoring on Boot\,(On|Off)\r'),                                                       'Function':None,                'DataLocation':self.ACMonitoringonBoot,         'Query':None},
-            'Energy':                   {'Regex':re.compile('\%R\,{0}\,Energy Monitor\,({1})\,V\,({1})\,A\,({1})\,PF\,({1})\,W\(real\)\,({1})\,Hz\,({1})\,W\(total\)\,({1})\,var\(reactive\)\,({1})\,VA\(apparent\)\,({1})\,W\(fundimental\)\,({1})\,W\(harmonic\)\r'.format(self.DateTimePattern,self.FloatPattern)),  'Function':self.EnergyParse, 'DataLocation':None,  'Query':None},
-            'ACVOLTAGEGAIN':            {'Regex':re.compile('\%R\,ACVOLTAGEGAIN\,(\d{,5})\r'),                                                                      'Function':None,                'DataLocation':self.ACVOLTAGEGAIN,              'Query':'\x25ACVOLTAGEGAIN?\r'},
-            'ACFREQ':                   {'Regex':re.compile('\%R\,ACFREQ\,(60|50)\r'),                                                                              'Function':None,                'DataLocation':self.ACFREQ,                     'Query':'\x25ACFREQ?\r'},
-            'ACPGAGAIN':                {'Regex':re.compile('\%R\,ACPGAGAIN\,(\d{,5})\r'),                                                                          'Function':None,                'DataLocation':self.ACPGAGAIN,                  'Query':'\x25ACPGAGAIN?\r'},
-            'ACLEGS':                   {'Regex':re.compile('\%R\,ACLEGS\,(1|2)\r'),                                                                                'Function':None,                'DataLocation':self.ACLEGS,                     'Query':'\x25ACLEGS?\r'},
-            'ACCT1GAIN':                {'Regex':re.compile('\%R\,ACCT1GAIN\,(\d{,5})\r'),                                                                          'Function':None,                'DataLocation':self.ACCT1GAIN,                  'Query':'\x25ACCT1GAIN?\r'},
-            'ACCT2GAIN':                {'Regex':re.compile('\%R\,ACCT2GAIN\,(\d{,5})\r'),                                                                          'Function':None,                'DataLocation':self.ACCT2GAIN,                  'Query':'\x25ACCT2GAIN?\r'},
+            'AC Energy Monitoring':     {'Function':None,                   'DataLocation':self.ACEnergyMonitoring,         'Query':None}, #done
+            'AC Energy Monitoring on boot':{'Function':None,                'DataLocation':self.ACMonitoringonBoot,         'Query':None}, #done
+            'Energy Monitor':           {'Function':self.EnergyParse,       'DataLocation':None,                            'Query':None}, #done
+            'ACVOLTAGEGAIN':            {'Function':None,                   'DataLocation':self.ACVOLTAGEGAIN,              'Query':'\x25ACVOLTAGEGAIN?\r'}, #done
+            'ACFREQ':                   {'Function':None,                   'DataLocation':self.ACFREQ,                     'Query':'\x25ACFREQ?\r'}, #done
+            'ACPGAGAIN':                {'Function':None,                   'DataLocation':self.ACPGAGAIN,                  'Query':'\x25ACPGAGAIN?\r'}, #done
+            'ACLEGS':                   {'Function':None,                   'DataLocation':self.ACLEGS,                     'Query':'\x25ACLEGS?\r'}, #done
+            'ACCT1GAIN':                {'Function':None,                   'DataLocation':self.ACCT1GAIN,                  'Query':'\x25ACCT1GAIN?\r'}, #done
+            'ACCT2GAIN':                {'Function':None,                   'DataLocation':self.ACCT2GAIN,                  'Query':'\x25ACCT2GAIN?\r'}, #done
 
-            'Streaming On Boot':        {'Regex':re.compile('\%R\,Streaming Data on boot\,USB\,(On|Off)\,RS232\,(On|Off)\r'),                                       'Function':self.StreamingParse, 'DataLocation':None,                            'Query':'\x25STREAMINGONBOOT?\r'},
-            'Units':                    {'Regex':re.compile('\%R\,Units\,(I|M)\r'),                                                                                 'Function':None,                'DataLocation':self.Units,                      'Query':'\x25UNITS?\r'},
-            'DeviceInfo':               {'Regex':re.compile('\%R\,CampKeen\,FW\,(.*)\r'),                                                                           'Function':None,                'DataLocation':self.DeviceInfo,                 'Query':'\x25DEVICE?\r'},
-            'Warning':                  {'Regex':re.compile('\%R\,{0}\,Warning\,(.*)\r'.format(self.DateTimePattern)),                                              'Function':self.WarningParse,   'DataLocation':None,                            'Query':'\x25WARNING?\r'},
-            'Port':                     {'Regex':re.compile('\%R\,Current Port\,(RS232|USB)\r'),                                                                    'Function':None,                'DataLocation':self.CurrentPort,                'Query':'\x25PORT?\r'},
+            'StreamingData':            {'Function':self.StreamingParse,    'DataLocation':None,                            'Query':'\x25STREAMINGONBOOT?\r'}, #done
+            'Units':                    {'Function':None,                   'DataLocation':self.Units,                      'Query':'\x25UNITS?\r'}, 
+            'DeviceInfo':               {'Function':None,                   'DataLocation':self.DeviceInfo,                 'Query':'\x25DEVICE?\r'},
+            'Warning':                  {'Function':self.WarningParse,      'DataLocation':None,                            'Query':'\x25WARNING?\r'},
+            'Port':                     {'Function':None,                   'DataLocation':self.CurrentPort,                'Query':'\x25PORT?\r'},
              }
 
     def GetState(self,Name):
@@ -146,51 +142,151 @@ class CampKeenDataParsing():
             pass
 
     def IncomingDataParse(self,Buffer):
-        for Key in self.Regex:
-            result = re.search(self.Regex[Key]['Regex'],Buffer)
-            PostProcessFunction = self.Regex[Key]['Function']
-            if result:
-                if PostProcessFunction == None:
-                    self.Regex[Key]['DataLocation'].append(None)
-                    self.Regex[Key]['DataLocation'].append(result.group(1))
-                else:
-                    self.Regex[Key]['Function'](result)
-                Buffer = Buffer[:result.span()[0]] + Buffer[result.span()[1]:]
-                break
+        StartTime = time.monotonic()
+        while len(Buffer) !=0: 
+            IsThereAStartChar = Buffer.find('%R')
+            IsThereACR = Buffer.find('\r')
 
-        IsThereAStartChar = Buffer.find('%R')
-        if IsThereAStartChar == -1 and len(Buffer) != 0:
-            #case of junk in the buffer
-            Buffer = ''
-        else:
-            if IsThereAStartChar != 0:
-                IsThereACR = Buffer.find('\r')
+            SliceAndDice = Buffer[IsThereAStartChar:IsThereACR].split(',')
+            print(SliceAndDice,len(SliceAndDice))
+            if len(SliceAndDice) > 1:
+                print(SliceAndDice[2],SliceAndDice[1])
+                for key in self.Regex:
+                    if SliceAndDice[2] == key and key != 'Units':
+                        if self.Regex[key]['Function'] == None:
+                            self.Regex[key]['DataLocation'].insert(0,SliceAndDice[1])
+                            self.Regex[key]['DataLocation'].insert(1,SliceAndDice[3])
+                        else:
+                            self.Regex[key]['Function'](SliceAndDice)
+                    elif SliceAndDice[1] == key:
+                        if self.Regex[key]['Function'] == None:
+                            self.Regex[key]['DataLocation'].insert(0,None)
+                            self.Regex[key]['DataLocation'].insert(1,SliceAndDice[2])
+
+            if IsThereAStartChar == -1 and len(Buffer) != 0:
+                #case of junk in the buffer
+                Buffer = ''
+            else:
                 if IsThereACR > IsThereAStartChar:
                     Buffer = Buffer[IsThereACR:]
                 else:
                     Buffer = Buffer[IsThereAStartChar:]
 
+            Duration = abs(StartTime-time.monotonic())
+            if Duration > 0.1:
+                break
+
         return Buffer
 
-    def WarningParse(self,MatchObj):
+    def WarningParse(self,Data):
         pass
 
-    def StreamingParse(self,MatchObj):
-        pass
+    def WaterDurationParse(self,Data):
+        self.WaterDuration = [None,Data[5]]
 
-    def GeneratorParse(self,MatchObj):
-        pass
+    def StreamingParse(self,Data):
+        self.StreamingOnRS232OnBoot = [None,Data[5]]
+        self.StreamingOnUSBOnBoot = [None,Data[3]]
 
-    def EnergyParse(self, MatchObj):
-        pass
+    def GeneratorParse(self,Data):
+        self.Generator['Fuel Pressure'] = [Data[1],Data[5]]
+        self.Generator['Enclosure Temp'] = [Data[1],Data[10]]
+        self.Generator['Right Head Temp'] = [Data[1],Data[12]]
+        self.Generator['Left Head Temp'] = [Data[1],Data[14]]
 
-    def TempParse(self,MatchObj):
-        pass
+    def EnergyParse(self, Data):
+        self.EnergyMonitorStates['AC Votlage'] = [Data[1],Data[3]]
+        self.EnergyMonitorStates['AC Current'] = [Data[1],Data[5]]
+        self.EnergyMonitorStates['Power Factor'] = [Data[1],Data[7]]
+        self.EnergyMonitorStates['Real(W)'] = [Data[1],Data[9]]
+        self.EnergyMonitorStates['AC Frequency'] = [Data[1],Data[11]]
+        self.EnergyMonitorStates['Watts'] = [Data[1],Data[13]]
+        self.EnergyMonitorStates['Reactive(var)'] = [Data[1],Data[15]]
+        self.EnergyMonitorStates['Apparent(VA)'] = [Data[1],Data[17]]
+        self.EnergyMonitorStates['Fundimental(W)'] = [Data[1],Data[19]]
+        self.EnergyMonitorStates['Harmonic(W)'] = [Data[1],Data[21]]    
+
+    def TempParse(self,Data):
+        if Data[2] ==  'NTC Tempetatures':
+            self.Temps['Front AC'] = [Data[1],Data[6]]
+            self.Temps['Back AC'] = [Data[1],Data[8]]
+            self.Temps['Outside'] = [Data[1],Data[10]]
+            self.Temps['Back Cabin'] = [Data[1],Data[12]]
+            self.Temps['Hallway'] = [Data[1],Data[14]]
+            self.Temps['Freezer'] = [Data[1],Data[16]]
+            self.Temps['Fridge'] = [Data[1],Data[18]]
+            self.Temps['Bathroom'] = [Data[1],Data[20]]
+            self.Temps['Front Cabin'] = [Data[1],Data[22]]
+        elif Data[2] ==  'Head Unit Temp':
+            self.Temps['Head Unit'] = [Data[1],Data[5]]
+            
 
 
 
 
-Something ="%R,CampKeen,FW,1.0.9\r"
+Something = '''%R,CampKeen,FW,1.0.9\r
+%R,System Time,08:23:00-22/05/2022\r
+%R,Warning,None\r
+%R,StreamingData,USB,Off,RS232,Off\r
+%R,Water Pump Sense,Off\r
+%R,AC Energy Monitoring,On\r
+%R,Water,Off\r
+%R,Units,I\r
+%R,Water Source,Tank\r
+%R,08:20:33-22/05/2022,Water Tank Level,Full\r
+%R,WATERDURATION,Units,Seconds,150\r
+%R,08:20:32-22/05/2022,Sewage,1/2\r
+%R,08:20:30-22/05/2022,Grey,1/4\r
+%R,08:20:33-22/05/2022,LPG,97\r
+%R,08:20:32-22/05/2022,Camper VDC,13.27\r
+%R,08:20:32-22/05/2022,RTCBattery,2.90\r
+%R,08:22:58-22/05/2022,NTC Tempetatures,Units,F,Front AC Temp,59.94,Back AC Temp,61.01,Under Awning Temp,59.76,Back Cabin Temp,60.83,Hallway Temp,60.47,Freezer,-19.70,Fridge,45.46,Bathroom Temp,60.30,Front Cabin Temp,61.54\r
+%R,08:23:00-22/05/2022,Head Unit Temp,Units,F,70.70\r
+%R,08:22:58-22/05/2022,Generator Fuel Pressure,Units,PSI,0.00,Generator Temps, Enclosure,Units,F,54.98,Right Head Temp,56.74,Left Head Temp,57.77\r
+%R,08:22:51-22/05/2022,Energy Monitor,119.40,V,4.18,A,0.96,PF,8.36,W{real),60.00,Hz,249.74,W(total),1.59,var(reactive),-1.80,VA(apparent),9.96,W(fundimental),-1.60,W(harmonic)\r
+%R,ACVOLTAGEGAIN,1960\r
+%R,ACFREQ,60\r
+%R,ACPGAGAIN,57005\r
+%R,ACLEGS,1\r
+%R,ACCT1GAIN,49320\r
+%R,ACCT2GAIN,1\r
+%R,Streaming Data on boot,USB,Off,RS232,Off\r
+%R,StreamingData,USB,Off,RS232,Off\r
+%R,AC Energy Monitoring on boot,On\r
+%R,Water Pump Sense on boot,Off\r
+'''
+
 test = CampKeenDataParsing()
-print(test.IncomingDataParse(Something))
-print(test.DeviceInfo)
+print('Returned Buffer', test.IncomingDataParse(Something))
+
+print('SewageTankState',test.SewageTankState)
+print('GreyTankState',test.GreyTankState)
+print('LPGState',test.LPGState)
+print('WaterTankState',test.WaterTankState)
+print('WaterSourceState',test.WaterSourceState)
+print('WaterState',test.WaterState)
+print('WaterPumpSenseState',test.WaterPumpSenseState)
+print('WaterPumpSenseOnBoot',test.WaterPumpSenseOnBoot)
+print('WaterDuration',test.WaterDuration)
+
+print('CamperBatteryVoltage',test.CamperBatteryVoltage)
+print('RTCBatteryVoltage',test.RTCBatteryVoltage)
+
+print('Generator',test.Generator)
+print('EnergyMonitorStates',test.EnergyMonitorStates)
+print('Temps',test.Temps)
+
+print('ACLEGS',test.ACLEGS)
+print('ACCT1GAIN',test.ACCT1GAIN)
+print('ACCT2GAIN',test.ACCT2GAIN)
+print('ACVOLTAGEGAIN',test.ACVOLTAGEGAIN)
+print('ACFREQ',test.ACFREQ)
+print('ACPGAGAIN',test.ACPGAGAIN)
+print('ACEnergyMonitoring',test.ACEnergyMonitoring)
+print('ACMonitoringonBoot',test.ACMonitoringonBoot)
+
+print('StreamingOnRS232OnBoot',test.StreamingOnRS232OnBoot)
+print('StreamingOnUSBOnBoot',test.StreamingOnUSBOnBoot)
+print('CurrentPort',test.CurrentPort)
+print('DeviceInfo',test.DeviceInfo)
+print('Units',test.Units)

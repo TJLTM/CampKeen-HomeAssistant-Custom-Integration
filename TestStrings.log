@@ -3,9 +3,9 @@ Starting CampKeen\r
 FW: 1.0.9\r
 Units: I\r
 System Initialized and values populated:08:23:15-22/05/2022\r
-%R,CampKeen,FW,1.0.9\r
+%R,CampKeen,1.0.9\r
 %R,System Time,08:23:00-22/05/2022\r
-%R,Warning,None\r
+%R,Warning,Clear\r
 %R,StreamingData,USB,Off,RS232,Off\r
 %R,Water Pump Sense,Off\r
 %R,AC Energy Monitoring,On\r
@@ -13,8 +13,9 @@ System Initialized and values populated:08:23:15-22/05/2022\r
 %R,Units,I\r
 %R,Water Source,Tank\r
 %R,08:20:33-22/05/2022,Water Tank Level,Full\r
-%R,WATERDURATION,Units,Seconds,150\r
+%R,WATERDURATION,150\r
 %R,08:20:32-22/05/2022,Sewage,1/2\r
+%R,08:20:32-22/05/2022,Sewage,4/2\r
 %R,08:20:30-22/05/2022,Grey,1/4\r
 %R,08:20:33-22/05/2022,LPG,97\r
 %R,08:20:32-22/05/2022,Camper VDC,13.27\r
@@ -33,6 +34,104 @@ System Initialized and values populated:08:23:15-22/05/2022\r
 %R,StreamingData,USB,Off,RS232,Off\r
 %R,AC Energy Monitoring on boot,On\r
 %R,Water Pump Sense on boot,Off\r
+%R,Water Source Override On Boot,On\r
+%R,Water Source Override,Off\r
+%R,Current Port,RS232\r
+%R,08:20:32-22/05/2022,ALARM,Active\r
+%R,Warning,Somethingthingt\r
+
+
+
+            
+
+
+
+
+Something = '''Connecting to ATM90E32\r
+Starting CampKeen\r
+FW: 1.0.9\r
+Units: I\r
+System Initialized and values populated:08:23:15-22/05/2022\r
+%R,CampKeen,1.0.9\r
+%R,System Time,08:23:00-22/05/2022\r
+%R,Warning,Clear\r
+%R,StreamingData,USB,Off,RS232,Off\r
+%R,Water Pump Sense,Off\r
+%R,AC Energy Monitoring,On\r
+%R,Water,Off\r
+%R,Units,I\r
+%R,Water Source,Tank\r
+%R,08:20:33-22/05/2022,Water Tank Level,Full\r
+%R,WATERDURATION,150\r
+%R,08:20:32-22/05/2022,Sewage,1/2\r
+%R,08:20:32-22/05/2022,Sewage,4/2\r
+%R,08:20:30-22/05/2022,Grey,1/4\r
+%R,08:20:33-22/05/2022,LPG,97\r
+%R,08:20:32-22/05/2022,Camper VDC,13.27\r
+%R,08:20:32-22/05/2022,RTCBattery,2.90\r
+%R,08:22:58-22/05/2022,NTC Tempetatures,Units,F,Front AC Temp,59.94,Back AC Temp,61.01,Under Awning Temp,59.76,Back Cabin Temp,60.83,Hallway Temp,60.47,Freezer,-19.70,Fridge,45.46,Bathroom Temp,60.30,Front Cabin Temp,61.54\r
+%R,08:23:00-22/05/2022,Head Unit Temp,Units,F,70.70\r
+%R,08:22:58-22/05/2022,Generator Fuel Pressure,Units,PSI,0.00,Generator Temps, Enclosure,Units,F,54.98,Right Head Temp,56.74,Left Head Temp,57.77\r
+%R,08:22:51-22/05/2022,Energy Monitor,119.40,V,4.18,A,0.96,PF,8.36,W{real),60.00,Hz,249.74,W(total),1.59,var(reactive),-1.80,VA(apparent),9.96,W(fundimental),-1.60,W(harmonic)\r
+%R,ACVOLTAGEGAIN,1960\r
+%R,ACFREQ,60\r
+%R,ACPGAGAIN,57005\r
+%R,ACLEGS,1\r
+%R,ACCT1GAIN,49320\r
+%R,ACCT2GAIN,1\r
+%R,Streaming Data on boot,USB,Off,RS232,Off\r
+%R,StreamingData,USB,Off,RS232,Off\r
+%R,AC Energy Monitoring on boot,On\r
+%R,Water Pump Sense on boot,Off\r
+%R,Water Source Override On Boot,On\r
+%R,Water Source Override,Off\r
+%R,Current Port,RS232\r
+%R,08:20:32-22/05/2022,ALARM,Active\r
+%R,Warning,Somethingthingt\r
+'''
+
+test = CampKeenDataParsing()
+print('Returned Buffer', test.IncomingDataParse(Something))
+
+#print('SewageTankState',test.SewageTankState)
+#print('GreyTankState',test.GreyTankState)
+#print('LPGState',test.LPGState)
+#print('WaterTankState',test.WaterTankState)
+#print('WaterSourceState',test.WaterSourceState)
+#print('WaterState',test.WaterState)
+#print('WaterPumpSenseState',test.WaterPumpSenseState)
+#print('WaterPumpSenseOnBoot',test.WaterPumpSenseOnBoot)
+#print('WaterDuration',test.WaterDuration)
+
+#print('CamperBatteryVoltage',test.CamperBatteryVoltage)
+#print('RTCBatteryVoltage',test.RTCBatteryVoltage)
+
+#print('Generator',test.Generator)
+#print('EnergyMonitorStates',test.EnergyMonitorStates)
+#print('Temps',test.Temps)
+
+#print('ACLEGS',test.ACLEGS)
+#print('ACCT1GAIN',test.ACCT1GAIN)
+#print('ACCT2GAIN',test.ACCT2GAIN)
+#print('ACVOLTAGEGAIN',test.ACVOLTAGEGAIN)
+#print('ACFREQ',test.ACFREQ)
+#print('ACPGAGAIN',test.ACPGAGAIN)
+#print('ACEnergyMonitoring',test.ACEnergyMonitoring)
+#print('ACMonitoringonBoot',test.ACMonitoringonBoot)
+
+#print('StreamingOnRS232OnBoot',test.StreamingOnRS232OnBoot)
+#print('StreamingOnUSBOnBoot',test.StreamingOnUSBOnBoot)
+
+#print('DeviceInfo',test.DeviceInfo)
+#print('Units',test.Units)
+#print('StreamingOnRS232',test.StreamOnRS232)
+#print('StreamingOnUSB',test.StreamOnUSB)
+
+#print('CurrentPort',test.CurrentPort)
+#print('WaterSourceOverrideOnBoot',test.WaterSourceOverrideOnBoot)
+#print('WaterSourceOverRide',test.WaterSourceOverRide)
+#print('Alarm',test.AlarmState)
+#print('Warning',test.WarningState)
 
 
 

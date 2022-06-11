@@ -1,91 +1,76 @@
 import time
 
-class CampKeenConnector():
-    def __init__(self):
-        self.RXBuffer = b''
-
-    def Run(self):
-        pass
-
-    def Disconnect(self):
-        pass
-
-    def Loopy(self):
-        pass
-
-
-
 class CampKeenDataParsing():
     def __init__(self):
-        self.WarningState = []
-        self.AlarmState = []
-        self.StreamingOnRS232OnBoot = []
-        self.StreamingOnUSBOnBoot = []
-        self.WaterSourceOverrideOnBoot = []
-        self.WaterSourceOverRide = []
-        self.StreamOnRS232 = []
-        self.StreamOnUSB = []
-        self.CurrentPort = []
-        self.DeviceInfo = []
-        self.Units = []
+        self.WarningState = [None,None]
+        self.AlarmState = [None,None]
+        self.StreamingOnRS232OnBoot = [None,None]
+        self.StreamingOnUSBOnBoot = [None,None]
+        self.WaterSourceOverrideOnBoot = [None,None]
+        self.WaterSourceOverRide = [None,None]
+        self.StreamOnRS232 = [None,None]
+        self.StreamOnUSB = [None,None]
+        self.CurrentPort = [None,None]
+        self.DeviceInfo = [None,None]
+        self.Units = [None,None]
         #Tanks
-        self.SewageTankState = []
-        self.GreyTankState = []
-        self.LPGState = []
+        self.SewageTankState = [None,None]
+        self.GreyTankState = [None,None]
+        self.LPGState = [None,None]
         #Water
-        self.WaterTankState = []
-        self.WaterSourceState = []
-        self.WaterState = []
-        self.WaterPumpSenseState = []
-        self.WaterPumpSenseOnBoot = []
-        self.WaterDuration = []
+        self.WaterTankState = [None,None]
+        self.WaterSourceState = [None,None]
+        self.WaterState = [None,None]
+        self.WaterPumpSenseState = [None,None]
+        self.WaterPumpSenseOnBoot = [None,None]
+        self.WaterDuration = [None,None]
         #Batteries
-        self.CamperBatteryVoltage = []
-        self.RTCBatteryVoltage = []
+        self.CamperBatteryVoltage = [None,None]
+        self.RTCBatteryVoltage = [None,None]
         #Temps
         self.Temps = {
-            'Front AC':[],
-            'Back AC':[],
-            'Under Awning Temp':[],
-            'Back Cabin':[],
-            'Hallway':[],
-            'Freezer':[],
-            'Fridge':[],
-            'Bathroom':[],
-            'Front Cabin':[],
-            'Head Unit': [],
+            'Front AC':[None,None],
+            'Back AC':[None,None],
+            'Under Awning Temp':[None,None],
+            'Back Cabin':[None,None],
+            'Hallway':[None,None],
+            'Freezer':[None,None],
+            'Fridge':[None,None],
+            'Bathroom':[None,None],
+            'Front Cabin':[None,None],
+            'Head Unit': [None,None],
             }
         
         #Energy
         self.Generator = {
-            'Fuel Pressure':[],
-            'Enclosure Temp':[],
-            'Left Head Temp':[],
-            'Right Head Temp':[],
+            'Fuel Pressure':[None,None],
+            'Enclosure Temp':[None,None],
+            'Left Head Temp':[None,None],
+            'Right Head Temp':[None,None],
         }
 
         self.EnergyMonitorStates = {
-            'AC Votlage':[],
-            'Power Factor': [], 
-            'AC Current':[],
-            'AC Frequency':[],
-            'Watts':[],
-            'Reactive(var)':[],
-            'Apparent(VA)':[],
-            'Fundimental(W)':[], 
-            'Harmonic(W)':[],
-            'Real(W)':[],
+            'AC Votlage':[None,None],
+            'Power Factor': [None,None], 
+            'AC Current':[None,None],
+            'AC Frequency':[None,None],
+            'Watts':[None,None],
+            'Reactive(var)':[None,None],
+            'Apparent(VA)':[None,None],
+            'Fundimental(W)':[None,None], 
+            'Harmonic(W)':[None,None],
+            'Real(W)':[None,None],
             }
 
 
-        self.ACLEGS = []
-        self.ACCT1GAIN = []
-        self.ACCT2GAIN = []
-        self.ACVOLTAGEGAIN = []
-        self.ACFREQ = []
-        self.ACPGAGAIN = []
-        self.ACEnergyMonitoring = []
-        self.ACMonitoringonBoot = []
+        self.ACLEGS = [None,None]
+        self.ACCT1GAIN = [None,None]
+        self.ACCT2GAIN = [None,None]
+        self.ACVOLTAGEGAIN = [None,None]
+        self.ACFREQ = [None,None]
+        self.ACPGAGAIN = [None,None]
+        self.ACEnergyMonitoring = [None,None]
+        self.ACMonitoringonBoot = [None,None]
 
         self.Regex = {
             'Sewage':                           {'Function':None,                   'DataLocation':self.SewageTankState,           'Query':'\x25SEWAGE?\r'}, #done
@@ -118,7 +103,7 @@ class CampKeenDataParsing():
             'ACCT1GAIN':                        {'Function':None,                   'DataLocation':self.ACCT1GAIN,                  'Query':'\x25ACCT1GAIN?\r'}, #done
             'ACCT2GAIN':                        {'Function':None,                   'DataLocation':self.ACCT2GAIN,                  'Query':'\x25ACCT2GAIN?\r'}, #done
 
-            'StreamingData':                    {'Function':self.StreamingParse,    'DataLocation':None,                            'Query':'\x25STREAMINGONBOOT?\r'}, #done
+            'StreamingData':                    {'Function':self.StreamingParse,    'DataLocation':None,                            'Query':'\x25STREAMING?\r'}, #done
             'Streaming Data on boot':           {'Function':self.StreamingBootParse,'DataLocation':None,                            'Query':'\x25STREAMINGONBOOT?\r'}, #done
             'Units':                            {'Function':None,                   'DataLocation':self.Units,                      'Query':'\x25UNITS?\r'}, #done
             'CampKeen':                         {'Function':None,                   'DataLocation':self.DeviceInfo,                 'Query':'\x25DEVICE?\r'},#done
@@ -138,7 +123,7 @@ class CampKeenDataParsing():
         return WhatToReturn
         
     def Query(self,Name):
-        if Name in self.Regex.keys():
+        if Name in self.Regex:
             return self.Regex[Name]['Query']
         else:
             return None
@@ -152,29 +137,29 @@ class CampKeenDataParsing():
         while len(Buffer) !=0: 
             IsThereAStartChar = Buffer.find('%R')
             IsThereACR = Buffer.find('\r')
+            if IsThereAStartChar != -1 and IsThereACR != -1:
+                SliceAndDice = Buffer[IsThereAStartChar:IsThereACR].split(',')
 
-            SliceAndDice = Buffer[IsThereAStartChar:IsThereACR].split(',')
-
-            if len(SliceAndDice) > 1:
-                for key in self.Regex:
-                    if SliceAndDice[2] == key and key != 'Units':
-                        if self.Regex[key]['Function'] == None:
-                            if len(self.Regex[key]['DataLocation']) != 0:
-                                self.Regex[key]['DataLocation'].pop(1)
-                                self.Regex[key]['DataLocation'].pop(0)
-                            self.Regex[key]['DataLocation'].insert(0,SliceAndDice[1])
-                            self.Regex[key]['DataLocation'].insert(1,SliceAndDice[3])
-                        else:
-                            self.Regex[key]['Function'](SliceAndDice)
-                    elif SliceAndDice[1] == key:
-                        if self.Regex[key]['Function'] == None:
-                            if len(self.Regex[key]['DataLocation']) != 0:
-                                self.Regex[key]['DataLocation'].pop(1)
-                                self.Regex[key]['DataLocation'].pop(0)
-                            self.Regex[key]['DataLocation'].insert(0,None)
-                            self.Regex[key]['DataLocation'].insert(1,SliceAndDice[2])
-                        else:
-                            self.Regex[key]['Function'](SliceAndDice)
+                if len(SliceAndDice) > 1:
+                    for key in self.Regex:
+                        if SliceAndDice[2] == key and key != 'Units':
+                            if self.Regex[key]['Function'] == None:
+                                if len(self.Regex[key]['DataLocation']) != 0:
+                                    self.Regex[key]['DataLocation'].pop(1)
+                                    self.Regex[key]['DataLocation'].pop(0)
+                                self.Regex[key]['DataLocation'].insert(0,SliceAndDice[1])
+                                self.Regex[key]['DataLocation'].insert(1,SliceAndDice[3])
+                            else:
+                                self.Regex[key]['Function'](SliceAndDice)
+                        elif SliceAndDice[1] == key:
+                            if self.Regex[key]['Function'] == None:
+                                if len(self.Regex[key]['DataLocation']) != 0:
+                                    self.Regex[key]['DataLocation'].pop(1)
+                                    self.Regex[key]['DataLocation'].pop(0)
+                                self.Regex[key]['DataLocation'].insert(0,None)
+                                self.Regex[key]['DataLocation'].insert(1,SliceAndDice[2])
+                            else:
+                                self.Regex[key]['Function'](SliceAndDice)
 
             if IsThereAStartChar == -1 and len(Buffer) != 0:
                 #case of junk in the buffer

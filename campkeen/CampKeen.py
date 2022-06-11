@@ -217,7 +217,7 @@ class CampKeenDataParsing():
         if Data[2] ==  'NTC Tempetatures':
             self.Temps['Front AC'] = [Data[1],Data[6]]
             self.Temps['Back AC'] = [Data[1],Data[8]]
-            self.Temps['Outside'] = [Data[1],Data[10]]
+            self.Temps['Under Awning Temp'] = [Data[1],Data[10]]
             self.Temps['Back Cabin'] = [Data[1],Data[12]]
             self.Temps['Hallway'] = [Data[1],Data[14]]
             self.Temps['Freezer'] = [Data[1],Data[16]]

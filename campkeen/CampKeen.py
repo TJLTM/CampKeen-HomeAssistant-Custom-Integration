@@ -72,65 +72,76 @@ class CampKeenDataParsing():
         self.ACEnergyMonitoring = [None,None]
         self.ACMonitoringonBoot = [None,None]
 
-        self.Regex = {
-            'Sewage':                           {'Function':None,                   'DataLocation':self.SewageTankState,           'Query':'\x25SEWAGE?\r'}, #done
-            'Grey':                             {'Function':None,                   'DataLocation':self.GreyTankState,             'Query':'\x25GREY?'}, #done
-            'LPG':                              {'Function':None,                   'DataLocation':self.LPGState,                  'Query':'\x25LPG?\r'}, #done
+        self.Information = {
+            'Sewage':                           {'Function':None,                   'DataLocation':self.SewageTankState,           'Query':'\x25SEWAGE?\r'},
+            'Grey':                             {'Function':None,                   'DataLocation':self.GreyTankState,             'Query':'\x25GREY?'}, 
+            'LPG':                              {'Function':None,                   'DataLocation':self.LPGState,                  'Query':'\x25LPG?\r'}, 
             
-            'Water Source':                     {'Function':None,                   'DataLocation':self.WaterSourceState,          'Query':'\x25WATERSOURCE?\r'}, #done
-            'Water Source Override':            {'Function':None,                   'DataLocation':self.WaterSourceOverRide,       'Query':'\x25WATERSOURCEOVERRIDE?\r'},#done
-            'Water Source Override On Boot':    {'Function':None,                   'DataLocation':self.WaterSourceOverrideOnBoot, 'Query':'\x25WATERSOURCEOVERRIDEONBOOT?\r'},#done
-            'Water Tank Level':                 {'Function':None,                   'DataLocation':self.WaterTankState,            'Query':'\x25WATERLEVEL?\r'}, #done
-            'Water':                            {'Function':None,                   'DataLocation':self.WaterState,                'Query':'\x25WATER?\r'}, #done
-            'Water Pump Sense':                 {'Function':None,                   'DataLocation':self.WaterPumpSenseState,       'Query':'\x25WATERPUMPSENSE?\r'},  #done
-            'Water Pump Sense on boot':         {'Function':None,                   'DataLocation':self.WaterPumpSenseOnBoot,      'Query':'\x25WATERPUMPSENSEONBOOT?\r'}, #done
+            'Water Source':                     {'Function':None,                   'DataLocation':self.WaterSourceState,          'Query':'\x25WATERSOURCE?\r',
+                                                 'SetCommand':'SETWATERSOURCE',     'Parameters':None,                             'States':['CITY','TANK']}, 
+            'Water Source Override':            {'Function':None,                   'DataLocation':self.WaterSourceOverRide,       'Query':'\x25WATERSOURCEOVERRIDE?\r',
+                                                 'SetCommand':'SETWATERSOURCEOVERRIDE', 'Parameters':None,'                         States':['ON', 'OFF']},
+            'Water Source Override On Boot':    {'Function':None,                   'DataLocation':self.WaterSourceOverrideOnBoot, 'Query':'\x25WATERSOURCEOVERRIDEONBOOT?\r'},
+            'Water Tank Level':                 {'Function':None,                   'DataLocation':self.WaterTankState,            'Query':'\x25WATERLEVEL?\r'}, 
+            'Water':                            {'Function':None,                   'DataLocation':self.WaterState,                'Query':'\x25WATER?\r',
+                                                 'SetCommand':'WATER',              'Parameters':None,                              'States':['ON', 'OFF']}, 
+            'Water Pump Sense':                 {'Function':None,                   'DataLocation':self.WaterPumpSenseState,       'Query':'\x25WATERPUMPSENSE?\r',
+                                                 'SetCommand':'SETWATERPUMPSENSE',  'Parameters':None,                              'States':['ON', 'OFF']},  
+            'Water Pump Sense on boot':         {'Function':None,                   'DataLocation':self.WaterPumpSenseOnBoot,      'Query':'\x25WATERPUMPSENSEONBOOT?\r'}, 
             'WATERDURATION':                    {'Function':None,                   'DataLocation':self.WaterDuration,             'Query':'\x25WATERDURATION?\r'},
-            
-            'Camper VDC':                       {'Function':None,                   'DataLocation':self.CamperBatteryVoltage,      'Query':'\x25BATTERY?\r'}, #done
-            'RTCBattery':                       {'Function':None,                   'DataLocation':self.RTCBatteryVoltage,         'Query':'\x25RTCBATTERY?\r'}, #done
-            'Head Unit Temp':                   {'Function':self.TempParse,         'DataLocation':None,                           'Query':'\x25UNITTEMP?\r'}, #done
-            'NTC Tempetatures':                 {'Function':self.TempParse,         'DataLocation':None,                           'Query':'\x25TEMPS?\r'}, #done
+            'Camper VDC':                       {'Function':None,                   'DataLocation':self.CamperBatteryVoltage,      'Query':'\x25BATTERY?\r'}, 
+            'RTCBattery':                       {'Function':None,                   'DataLocation':self.RTCBatteryVoltage,         'Query':'\x25RTCBATTERY?\r'}, 
+            'Head Unit Temp':                   {'Function':self.TempParse,         'DataLocation':None,                           'Query':'\x25UNITTEMP?\r'}, 
+            'NTC Tempetatures':                 {'Function':self.TempParse,         'DataLocation':None,                           'Query':'\x25TEMPS?\r'}, 
 
-            'Generator Fuel Pressure':          {'Function':self.GeneratorParse,    'DataLocation':None,                           'Query':'\x25GENERATOR?\r'}, #done
+            'Generator Fuel Pressure':          {'Function':self.GeneratorParse,    'DataLocation':None,                           'Query':'\x25GENERATOR?\r'}, 
 
-            'AC Energy Monitoring':             {'Function':None,                   'DataLocation':self.ACEnergyMonitoring,         'Query':None}, #done
-            'AC Energy Monitoring on boot':     {'Function':None,                   'DataLocation':self.ACMonitoringonBoot,         'Query':None}, #done
-            'Energy Monitor':                   {'Function':self.EnergyParse,       'DataLocation':None,                            'Query':None}, #done
-            'ACVOLTAGEGAIN':                    {'Function':None,                   'DataLocation':self.ACVOLTAGEGAIN,              'Query':'\x25ACVOLTAGEGAIN?\r'}, #done
-            'ACFREQ':                           {'Function':None,                   'DataLocation':self.ACFREQ,                     'Query':'\x25ACFREQ?\r'}, #done
-            'ACPGAGAIN':                        {'Function':None,                   'DataLocation':self.ACPGAGAIN,                  'Query':'\x25ACPGAGAIN?\r'}, #done
-            'ACLEGS':                           {'Function':None,                   'DataLocation':self.ACLEGS,                     'Query':'\x25ACLEGS?\r'}, #done
-            'ACCT1GAIN':                        {'Function':None,                   'DataLocation':self.ACCT1GAIN,                  'Query':'\x25ACCT1GAIN?\r'}, #done
-            'ACCT2GAIN':                        {'Function':None,                   'DataLocation':self.ACCT2GAIN,                  'Query':'\x25ACCT2GAIN?\r'}, #done
+            'AC Energy Monitoring':             {'Function':None,                   'DataLocation':self.ACEnergyMonitoring,         'Query':'\x25ACENMON?\r',
+                                                 'SetCommand':'SETACENMON',         'Parameters':None,                              'States':['ON', 'OFF']}, 
+            'AC Energy Monitoring on boot':     {'Function':None,                   'DataLocation':self.ACMonitoringonBoot,         'Query':'\x25ACENMONONBOOT?\r'}, 
+            'Energy Monitor':                   {'Function':self.EnergyParse,       'DataLocation':None,                            'Query':'\x25ENERGY?\r',}, 
+            'ACVOLTAGEGAIN':                    {'Function':None,                   'DataLocation':self.ACVOLTAGEGAIN,              'Query':'\x25ACVOLTAGEGAIN?\r'}, 
+            'ACFREQ':                           {'Function':None,                   'DataLocation':self.ACFREQ,                     'Query':'\x25ACFREQ?\r'}, 
+            'ACPGAGAIN':                        {'Function':None,                   'DataLocation':self.ACPGAGAIN,                  'Query':'\x25ACPGAGAIN?\r'}, 
+            'ACLEGS':                           {'Function':None,                   'DataLocation':self.ACLEGS,                     'Query':'\x25ACLEGS?\r'}, 
+            'ACCT1GAIN':                        {'Function':None,                   'DataLocation':self.ACCT1GAIN,                  'Query':'\x25ACCT1GAIN?\r'}, 
+            'ACCT2GAIN':                        {'Function':None,                   'DataLocation':self.ACCT2GAIN,                  'Query':'\x25ACCT2GAIN?\r'}, 
 
-            'StreamingData':                    {'Function':self.StreamingParse,    'DataLocation':None,                            'Query':'\x25STREAMING?\r'}, #done
-            'Streaming Data on boot':           {'Function':self.StreamingBootParse,'DataLocation':None,                            'Query':'\x25STREAMINGONBOOT?\r'}, #done
-            'Units':                            {'Function':None,                   'DataLocation':self.Units,                      'Query':'\x25UNITS?\r'}, #done
-            'CampKeen':                         {'Function':None,                   'DataLocation':self.DeviceInfo,                 'Query':'\x25DEVICE?\r'},#done
-            'Warning':                          {'Function':None,                   'DataLocation':self.WarningState,               'Query':'\x25WARNING?\r'}, #done
-            'ALARM':                            {'Function':None,                   'DataLocation':self.AlarmState,                 'Query':'\x25ALARM?\r'}, #done
-            'Current Port':                     {'Function':None,                   'DataLocation':self.CurrentPort,                'Query':'\x25PORT?\r'}, #done
+            'StreamingData':                    {'Function':self.StreamingParse,    'DataLocation':None,                            'Query':'\x25STREAMING?\r',
+                                                 'SetCommand':'SETSTREAMINGDATA',   'Parameters':['USB','RS232'],                   'States':['ON', 'OFF']}, 
+            'Streaming Data on boot':           {'Function':self.StreamingBootParse,'DataLocation':None,                            'Query':'\x25STREAMINGONBOOT?\r'}, 
+            'Units':                            {'Function':None,                   'DataLocation':self.Units,                      'Query':'\x25UNITS?\r'}, 
+            'CampKeen':                         {'Function':None,                   'DataLocation':self.DeviceInfo,                 'Query':'\x25DEVICE?\r'},
+            'Warning':                          {'Function':None,                   'DataLocation':self.WarningState,               'Query':'\x25WARNING?\r',
+                                                 'SetCommand':'RESETWARNINGS',      'Parameters':None,                              'States':None}, 
+            'ALARM':                            {'Function':None,                   'DataLocation':self.AlarmState,                 'Query':'\x25ALARM?\r',
+                                                 'SetCommand':'RESETALLALARMS',     'Parameters':None,                              'States':None}, 
+            'Current Port':                     {'Function':None,                   'DataLocation':self.CurrentPort,                'Query':'\x25PORT?\r'}, 
              }
 
     def GetState(self,Name):
         WhatToReturn = [None, None]
-        if Name in self.Regex.keys():
-            if self.Regex[Name]['DataLocation'] != None:
-                WhatToReturn = self.Regex[Name]['DataLocation']
+        if Name in self.Information:
+            if self.Information[Name]['DataLocation'] != None:
+                WhatToReturn = self.Information[Name]['DataLocation']
             else:
                 pass
-
         return WhatToReturn
         
     def Query(self,Name):
-        if Name in self.Regex:
-            return self.Regex[Name]['Query']
+        if Name in self.Information:
+            return self.Information[Name]['Query']
         else:
             return None
 
-    def SendCommands(self,WhichCommand):
-        if WhichCommand == '':
-            pass
+    def SetCommands(self,WhichCommand):
+        if WhichCommand in self.Information:
+            if 'SetCommand' in self.Information[WhichCommand].keys():
+                return {'Command':self.Information[WhichCommand]['SetCommand'],'Parameters':self.Information[WhichCommand]['Parameters'],'States':self.Information[WhichCommand]['States']}
+            else:
+                return {}
+        else:
+            return {}
 
     def IncomingDataParse(self,Buffer):
         StartTime = time.monotonic()
@@ -141,25 +152,25 @@ class CampKeenDataParsing():
                 SliceAndDice = Buffer[IsThereAStartChar:IsThereACR].split(',')
 
                 if len(SliceAndDice) > 1:
-                    for key in self.Regex:
+                    for key in self.Information:
                         if SliceAndDice[2] == key and key != 'Units':
-                            if self.Regex[key]['Function'] == None:
-                                if len(self.Regex[key]['DataLocation']) != 0:
-                                    self.Regex[key]['DataLocation'].pop(1)
-                                    self.Regex[key]['DataLocation'].pop(0)
-                                self.Regex[key]['DataLocation'].insert(0,SliceAndDice[1])
-                                self.Regex[key]['DataLocation'].insert(1,SliceAndDice[3])
+                            if self.Information[key]['Function'] == None:
+                                if len(self.Information[key]['DataLocation']) != 0:
+                                    self.Information[key]['DataLocation'].pop(1)
+                                    self.Information[key]['DataLocation'].pop(0)
+                                self.Information[key]['DataLocation'].insert(0,SliceAndDice[1])
+                                self.Information[key]['DataLocation'].insert(1,SliceAndDice[3])
                             else:
-                                self.Regex[key]['Function'](SliceAndDice)
+                                self.Information[key]['Function'](SliceAndDice)
                         elif SliceAndDice[1] == key:
-                            if self.Regex[key]['Function'] == None:
-                                if len(self.Regex[key]['DataLocation']) != 0:
-                                    self.Regex[key]['DataLocation'].pop(1)
-                                    self.Regex[key]['DataLocation'].pop(0)
-                                self.Regex[key]['DataLocation'].insert(0,None)
-                                self.Regex[key]['DataLocation'].insert(1,SliceAndDice[2])
+                            if self.Information[key]['Function'] == None:
+                                if len(self.Information[key]['DataLocation']) != 0:
+                                    self.Information[key]['DataLocation'].pop(1)
+                                    self.Information[key]['DataLocation'].pop(0)
+                                self.Information[key]['DataLocation'].insert(0,None)
+                                self.Information[key]['DataLocation'].insert(1,SliceAndDice[2])
                             else:
-                                self.Regex[key]['Function'](SliceAndDice)
+                                self.Information[key]['Function'](SliceAndDice)
 
             if IsThereAStartChar == -1 and len(Buffer) != 0:
                 #case of junk in the buffer

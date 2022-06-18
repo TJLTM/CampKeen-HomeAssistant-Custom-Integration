@@ -117,6 +117,8 @@ class CampKeenDataParsing():
             'ALARM':                            {'Function':None,                   'DataLocation':self.AlarmState,                 'Query':'\x25ALARM?\r',
                                                  'SetCommand':'RESETALLALARMS',     'Parameters':None,                              'States':None}, 
             'Current Port':                     {'Function':None,                   'DataLocation':self.CurrentPort,                'Query':'\x25PORT?\r'}, 
+            'Travel Mode':                      {'Function':None,                   'DataLocation':self.Travel,                     'Query':'\x25TRAVEL?\r',
+                                                 'SetCommand':'TRAVEL',             'Parameters':None,                              'States':['ON', 'OFF']},
              }
 
     def GetState(self,Name):
